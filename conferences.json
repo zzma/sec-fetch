@@ -1,0 +1,67 @@
+[
+  {
+    "name": "USENIX",
+    "url": "https://www.usenix.org/conference/usenixsecurity17/technical-sessions",
+    "year": 2017
+  },
+  {
+    "name": "USENIX",
+    "url": "https://www.usenix.org/conference/usenixsecurity16/technical-sessions",
+    "year": 2016
+  },
+  {
+    "name": "USENIX",
+    "url": "https://www.usenix.org/conference/usenixsecurity15/technical-sessions",
+    "year": 2015
+  },
+  {
+    "name": "USENIX",
+    "url": "https://www.usenix.org/conference/usenixsecurity14/technical-sessions",
+    "year": 2014
+  },
+  {
+    "name": "NDSS",
+    "url": "https://www.ndss-symposium.org/ndss2018/programme/",
+    "year": 2018
+  },
+  {
+    "name": "NDSS",
+    "url": "https://www.ndss-symposium.org/ndss2017/ndss-2017-programme/",
+    "year": 2017
+  },
+  {
+    "name": "NDSS",
+    "url": "https://www.ndss-symposium.org/ndss2016/ndss-2016-programme/",
+    "year": 2016
+  },
+  {
+    "name": "Oakland",
+    "url": "https://www.ieee-security.org/TC/SP2018/program-papers.html",
+    "year": 2018
+  },
+  {
+    "name": "Oakland",
+    "url": "https://www.ieee-security.org/TC/SP2017/program-papers.html",
+    "year": 2017
+  },
+  {
+    "name": "Oakland",
+    "url": "https://www.ieee-security.org/TC/SP2016/program-papers.html",
+    "year": 2016
+  },
+  {
+    "name": "CCS",
+    "url": "https://www.sigsac.org/ccs/CCS2018/accepted/papers/",
+    "year": 2018
+  },
+  {
+    "name": "CCS",
+    "url": "https://acmccs.github.io/papers/",
+    "year": 2017
+  },
+  {
+    "name": "CCS",
+    "url": "https://www.sigsac.org/ccs/CCS2016/accepted-papers/index.html",
+    "year": 2016
+  }
+]
