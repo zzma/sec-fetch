@@ -107,7 +107,7 @@ func downloadFile(url, filepath string) error {
 	return nil
 }
 
-func getDownloadUrl(pageUrl string) (string, error) {
+func getDownloadUrl(pageUrl string, matcher scrape.Matcher) (string, error) {
 	response, err := http.Get(pageUrl)
 	if err != nil {
 		return "", err
@@ -116,15 +116,6 @@ func getDownloadUrl(pageUrl string) (string, error) {
 	root, err := html.Parse(response.Body)
 	if err != nil {
 		return "", err
-	}
-
-	// define a matcher
-	matcher := func(n *html.Node) bool {
-		// must check for nil values
-		if n.DataAtom == atom.A && n.Parent != nil {
-			return scrape.Attr(n.Parent, "class") == "file"
-		}
-		return false
 	}
 
 	// grab all paper links
@@ -171,63 +162,231 @@ func main() {
 
 	for _, conf := range config.conferences {
 		switch conf.Name {
-		case "USENIX":
-			response, err := http.Get(conf.URL)
-			if err != nil {
-				log.Fatal(err)
-			}
-
-			root, err := html.Parse(response.Body)
-			if err != nil {
-				log.Fatal(err)
-			}
-
-			// define a matcher
-			matcher := func(n *html.Node) bool {
-				// must check for nil values
-				if n.DataAtom == atom.A && n.Parent != nil && n.Parent.Parent != nil {
-					return strings.Contains(scrape.Attr(n.Parent.Parent, "class"), "node-paper")
-				}
-				return false
-			}
-
-			// grab all paper links
-			pageNodes := scrape.FindAll(root, matcher)
-			pages := make([]string, 0)
-			for _, page := range pageNodes {
-				url, err := getFullUrl(conf.URL, scrape.Attr(page, "href"))
+		//case "USENIX":
+		//	response, err := http.Get(conf.URL)
+		//	if err != nil {
+		//		log.Fatal(err)
+		//	}
+		//
+		//	root, err := html.Parse(response.Body)
+		//	if err != nil {
+		//		log.Fatal(err)
+		//	}
+		//
+		//	// define a matcher
+		//	matcher := func(n *html.Node) bool {
+		//		// must check for nil values
+		//		if n.DataAtom == atom.A && n.Parent != nil && n.Parent.Parent != nil {
+		//			return strings.Contains(scrape.Attr(n.Parent.Parent, "class"), "node-paper")
+		//		}
+		//		return false
+		//	}
+		//
+		//	// grab all paper links
+		//	pageNodes := scrape.FindAll(root, matcher)
+		//	pages := make([]string, 0)
+		//	for _, page := range pageNodes {
+		//		url, err := getFullUrl(conf.URL, scrape.Attr(page, "href"))
+		//		if err != nil {
+		//			log.Fatal(err)
+		//		}
+		//		pages = append(pages, url)
+		//	}
+		//
+		//	// create conference directory
+		//	confDirectory := path.Join(config.outputDirectory, conf.Name, strconv.Itoa(conf.Year))
+		//	if _, err := os.Stat(confDirectory); os.IsNotExist(err) {
+		//		if err := os.MkdirAll(confDirectory, os.ModePerm); err != nil {
+		//			log.Fatal(err)
+		//		}
+		//	}
+		//
+		//	for _, p := range pages {
+		//		// define a matcher
+		//		urlMatcher := func(n *html.Node) bool {
+		//			// must check for nil values
+		//			if n.DataAtom == atom.A && n.Parent != nil {
+		//				return scrape.Attr(n.Parent, "class") == "file"
+		//			}
+		//			return false
+		//		}
+		//		downloadUrl, err := getDownloadUrl(p, urlMatcher)
+		//		if err != nil {
+		//			if err == MissingDownloadLinkErr {
+		//				continue
+		//			} else if err == TooManyDownloadLinksErr {
+		//				log.Println(err)
+		//			} else {
+		//				log.Fatal(err)
+		//			}
+		//		}
+		//		log.Println(downloadUrl)
+		//		splitUrl := strings.Split(downloadUrl, "/")
+		//		filepath := path.Join(confDirectory, splitUrl[len(splitUrl)-1])
+		//		downloadFile(downloadUrl, filepath)
+		//		time.Sleep(500*time.Millisecond)
+		//	}
+		case "NDSS":
+			switch {
+			case conf.Year == 2018:
+				response, err := http.Get(conf.URL)
 				if err != nil {
 					log.Fatal(err)
 				}
-				pages = append(pages, url)
-			}
 
-			// create conference directory
-			confDirectory := path.Join(config.outputDirectory, conf.Name, strconv.Itoa(conf.Year))
-			if _, err := os.Stat(confDirectory); os.IsNotExist(err) {
-				if err := os.MkdirAll(confDirectory, os.ModePerm); err != nil {
+				root, err := html.Parse(response.Body)
+				if err != nil {
 					log.Fatal(err)
 				}
-			}
 
-			for _, p := range pages {
-				downloadUrl, err := getDownloadUrl(p)
-				if err != nil {
-					if err == MissingDownloadLinkErr {
-						continue
-					} else if err == TooManyDownloadLinksErr {
-						log.Println(err)
-					} else {
+				// define a matcher
+				matcher := func(n *html.Node) bool {
+					// must check for nil values
+					if n.DataAtom == atom.A {
+						return scrape.Text(n) == "Paper"
+					}
+					return false
+				}
+
+				// grab all download links
+				downloadNodes := scrape.FindAll(root, matcher)
+				downloadLinks := make([]string, 0)
+				for _, node := range downloadNodes {
+					url, err := getFullUrl(conf.URL, scrape.Attr(node, "href"))
+					if err != nil {
+						log.Fatal(err)
+					}
+					downloadLinks = append(downloadLinks, url)
+				}
+
+				// create conference directory
+				confDirectory := path.Join(config.outputDirectory, conf.Name, strconv.Itoa(conf.Year))
+				if _, err := os.Stat(confDirectory); os.IsNotExist(err) {
+					if err := os.MkdirAll(confDirectory, os.ModePerm); err != nil {
 						log.Fatal(err)
 					}
 				}
-				log.Println(downloadUrl)
-				splitUrl := strings.Split(downloadUrl, "/")
-				filepath := path.Join(confDirectory, splitUrl[len(splitUrl)-1])
-				downloadFile(downloadUrl, filepath)
-				time.Sleep(500*time.Millisecond)
-			}
 
+				for _, link := range downloadLinks {
+					log.Println(link)
+					splitUrl := strings.Split(link, "/")
+					filepath := path.Join(confDirectory, splitUrl[len(splitUrl)-1])
+					downloadFile(link, filepath)
+					time.Sleep(500 * time.Millisecond)
+				}
+			case conf.Year == 2017 || conf.Year == 2015 || conf.Year == 2014:
+				response, err := http.Get(conf.URL)
+				if err != nil {
+					log.Fatal(err)
+				}
+
+				root, err := html.Parse(response.Body)
+				if err != nil {
+					log.Fatal(err)
+				}
+
+				// define a matcher
+				matcher := func(n *html.Node) bool {
+					// must check for nil values
+					if n.DataAtom == atom.A && n.Parent != nil {
+						return n.Parent.DataAtom == atom.H3
+					}
+					return false
+				}
+
+				// grab all paper links
+				pageNodes := scrape.FindAll(root, matcher)
+				pages := make([]string, 0)
+				for _, page := range pageNodes {
+					url, err := getFullUrl(conf.URL, scrape.Attr(page, "href"))
+					if err != nil {
+						log.Fatal(err)
+					}
+					pages = append(pages, url)
+				}
+
+				// create conference directory
+				confDirectory := path.Join(config.outputDirectory, conf.Name, strconv.Itoa(conf.Year))
+				if _, err := os.Stat(confDirectory); os.IsNotExist(err) {
+					if err := os.MkdirAll(confDirectory, os.ModePerm); err != nil {
+						log.Fatal(err)
+					}
+				}
+
+				for _, p := range pages {
+					urlMatcher := func(n *html.Node) bool {
+						// must check for nil values
+						if n.DataAtom == atom.A {
+							return scrape.Text(n) == "Paper"
+						}
+						return false
+					}
+
+					downloadUrl, err := getDownloadUrl(p, urlMatcher)
+					if err != nil {
+						if err == MissingDownloadLinkErr {
+							continue
+						} else if err == TooManyDownloadLinksErr {
+							log.Println(err)
+						} else {
+							log.Fatal(err)
+						}
+					}
+					log.Println(downloadUrl)
+					splitUrl := strings.Split(downloadUrl, "/")
+					filepath := path.Join(confDirectory, splitUrl[len(splitUrl)-1])
+					downloadFile(downloadUrl, filepath)
+					time.Sleep(500 * time.Millisecond)
+				}
+			case conf.Year == 2016:
+				response, err := http.Get(conf.URL)
+				if err != nil {
+					log.Fatal(err)
+				}
+
+				root, err := html.Parse(response.Body)
+				if err != nil {
+					log.Fatal(err)
+				}
+
+				// define a matcher
+				matcher := func(n *html.Node) bool {
+					// must check for nil values
+					if n.DataAtom == atom.A && n.Parent != nil {
+						return n.Parent.DataAtom == atom.H3
+					}
+					return false
+				}
+
+				// grab all download links
+				downloadNodes := scrape.FindAll(root, matcher)
+				downloadLinks := make([]string, 0)
+				for _, node := range downloadNodes {
+					url, err := getFullUrl(conf.URL, scrape.Attr(node, "href"))
+					if err != nil {
+						log.Fatal(err)
+					}
+					downloadLinks = append(downloadLinks, url)
+				}
+
+				// create conference directory
+				confDirectory := path.Join(config.outputDirectory, conf.Name, strconv.Itoa(conf.Year))
+				if _, err := os.Stat(confDirectory); os.IsNotExist(err) {
+					if err := os.MkdirAll(confDirectory, os.ModePerm); err != nil {
+						log.Fatal(err)
+					}
+				}
+
+				for _, link := range downloadLinks {
+					log.Println(link)
+					splitUrl := strings.Split(link, "/")
+					filepath := path.Join(confDirectory, splitUrl[len(splitUrl)-1])
+					downloadFile(link, filepath)
+					time.Sleep(500 * time.Millisecond)
+				}
+			default:
+				log.Printf("no parser found for %s", conf.String())
+			}
 		default:
 			log.Printf("no parser found for %s", conf.String())
 		}

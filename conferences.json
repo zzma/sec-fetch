@@ -1,6 +1,11 @@
 [
   {
     "name": "USENIX",
+    "url": "https://www.usenix.org/conference/usenixsecurity18/technical-sessions",
+    "year": 2018
+  },
+  {
+    "name": "USENIX",
     "url": "https://www.usenix.org/conference/usenixsecurity17/technical-sessions",
     "year": 2017
   },
@@ -33,6 +38,16 @@
     "name": "NDSS",
     "url": "https://www.ndss-symposium.org/ndss2016/ndss-2016-programme/",
     "year": 2016
+  },
+  {
+    "name": "NDSS",
+    "url": "https://www.ndss-symposium.org/ndss2015/ndss-2015-programme/",
+    "year": 2015
+  },
+  {
+    "name": "NDSS",
+    "url": "https://www.ndss-symposium.org/ndss2014/programme/",
+    "year": 2014
   },
   {
     "name": "Oakland",
