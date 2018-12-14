@@ -65,6 +65,16 @@
     "year": 2016
   },
   {
+    "name": "Oakland",
+    "url": "https://www.ieee-security.org/TC/SP2015/program.html",
+    "year": 2015
+  },
+  {
+    "name": "Oakland",
+    "url": "https://www.ieee-security.org/TC/SP2014/program-notabs.html",
+    "year": 2014
+  },
+  {
     "name": "CCS",
     "url": "https://www.sigsac.org/ccs/CCS2018/accepted/papers/",
     "year": 2018
