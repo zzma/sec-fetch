@@ -88,5 +88,15 @@
     "name": "CCS",
     "url": "https://www.sigsac.org/ccs/CCS2016/accepted-papers/index.html",
     "year": 2016
+  },
+  {
+    "name": "CCS",
+    "url": "http://www.sigsac.org/ccs/CCS2015/pro_paper.html",
+    "year": 2015
+  },
+  {
+    "name": "CCS",
+    "url": "http://www.sigsac.org/ccs/CCS2014/pro_paper.html",
+    "year": 2014
   }
 ]
