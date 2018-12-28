@@ -495,6 +495,38 @@ func main() {
 					}
 					time.Sleep(config.fetchTimeout)
 				}
+			default:
+				log.Printf("no parser found for %s", conf.String())
+			}
+		case "CCS":
+			confDirectory, err := createConfDirectory(config.outputDirectory, conf)
+			if err != nil {
+				log.Fatal(err)
+			}
+			switch {
+			case conf.Year == 2017:
+				matcher := func(n *html.Node) bool {
+					// must check for nil values
+					if n.DataAtom == atom.A {
+						return scrape.Text(n) == "[PDF]"
+					}
+					return false
+				}
+
+				downloadLinks, err := getLinks(conf.URL, matcher)
+				if err != nil {
+					log.Fatal(err)
+				}
+
+				for _, link := range downloadLinks {
+					log.Println(link)
+					splitUrl := strings.Split(link, "/")
+					filepath := path.Join(confDirectory, splitUrl[len(splitUrl)-1])
+					downloadFile(link, filepath)
+					time.Sleep(config.fetchTimeout)
+				}
+			default:
+				log.Printf("no parser found for %s", conf.String())
 			}
 
 
