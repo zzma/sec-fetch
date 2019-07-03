@@ -26,6 +26,11 @@
   },
   {
     "name": "NDSS",
+    "url": "https://www.ndss-symposium.org/ndss-program/ndss-symposium-2019-program/",
+    "year": 2019
+  }
+  {
+    "name": "NDSS",
     "url": "https://www.ndss-symposium.org/ndss2018/programme/",
     "year": 2018
   },
@@ -48,6 +53,11 @@
     "name": "NDSS",
     "url": "https://www.ndss-symposium.org/ndss2014/programme/",
     "year": 2014
+  },
+  {
+    "name": "Oakland",
+    "url": "https://www.ieee-security.org/TC/SP2019/program-papers.html",
+    "year": 2019
   },
   {
     "name": "Oakland",

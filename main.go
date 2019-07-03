@@ -155,7 +155,9 @@ func getDownloadUrl(pageUrl string, matcher scrape.Matcher) (string, error) {
 		}
 
 		versionLink, ok := scrape.Find(root, allVersionsMatcher)
-		if !ok { log.Fatalf("no version link found for: %s", fileUrl)}
+		if !ok {
+			log.Fatalf("no version link found for: %s", fileUrl)
+		}
 		versionUrl, err := getFullUrl(pageUrl, scrape.Attr(versionLink, "href"))
 		if err != nil {
 			return "", err
@@ -165,7 +167,7 @@ func getDownloadUrl(pageUrl string, matcher scrape.Matcher) (string, error) {
 			// must check for nil values
 			if n.DataAtom == atom.A && n.Parent != nil {
 				href := scrape.Attr(n, "href")
-				return strings.HasSuffix(href, ".pdf")  && scrape.Attr(n.Parent, "class") == "gs_or_ggsm" && !strings.Contains(href, "www.ieee-security.org")
+				return strings.HasSuffix(href, ".pdf") && scrape.Attr(n.Parent, "class") == "gs_or_ggsm" && !strings.Contains(href, "www.ieee-security.org")
 			}
 			return false
 		}
@@ -200,7 +202,6 @@ func getLinks(pageUrl string, matcher scrape.Matcher) ([]string, error) {
 
 	return pages, nil
 }
-
 
 func getPaperTitles(pageUrl string, matcher scrape.Matcher) ([]string, error) {
 	response, err := http.Get(pageUrl)
@@ -254,7 +255,7 @@ func main() {
 		switch conf.Name {
 		case "USENIX":
 			confDirectory, err := createConfDirectory(config.outputDirectory, conf)
-			if err != nil  {
+			if err != nil {
 				log.Fatal(err)
 			}
 
@@ -298,12 +299,12 @@ func main() {
 			}
 		case "NDSS":
 			confDirectory, err := createConfDirectory(config.outputDirectory, conf)
-			if err != nil  {
+			if err != nil {
 				log.Fatal(err)
 			}
 
 			switch {
-			case conf.Year == 2018:
+			case conf.Year == 2018 || conf.Year == 2019:
 				matcher := func(n *html.Node) bool {
 					// must check for nil values
 					if n.DataAtom == atom.A {
@@ -394,7 +395,7 @@ func main() {
 				log.Fatal(err)
 			}
 			switch {
-			case conf.Year <= 2018 && conf.Year >= 2015:
+			case conf.Year <= 2019 && conf.Year >= 2015:
 				matcher := func(n *html.Node) bool {
 					if n.DataAtom == atom.B && n.Parent != nil {
 						return scrape.Attr(n.Parent, "class") == "list-group-item"
@@ -419,7 +420,7 @@ func main() {
 						// must check for nil values
 						if n.DataAtom == atom.A && n.Parent != nil {
 							href := scrape.Attr(n, "href")
-							return strings.HasSuffix(href, ".pdf")  && scrape.Attr(n.Parent, "class") == "gs_or_ggsm"
+							return strings.HasSuffix(href, ".pdf") && scrape.Attr(n.Parent, "class") == "gs_or_ggsm"
 						}
 						return false
 					}
@@ -428,6 +429,7 @@ func main() {
 					if err != nil {
 						if err == MissingDownloadLinkErr {
 							log.Printf("missing download link for: %s\n", gScholarUrl.String())
+							time.Sleep(config.fetchTimeout)
 							continue
 						} else if err == TooManyDownloadLinksErr {
 							log.Println(err)
@@ -528,7 +530,6 @@ func main() {
 			default:
 				log.Printf("no parser found for %s", conf.String())
 			}
-
 
 		default:
 			log.Printf("no parser found for %s", conf.String())
